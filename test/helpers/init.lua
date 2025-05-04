@@ -21,14 +21,10 @@ Handlers = {
     table.insert(List,{ name = name, match = function (msg) return msg.Action == name end, handle = fn }) 
   end,
   evaluate = function (msg)
-    local continue = true
     Utils.map(function (h)
-      if continue then
-        continue = h.match(msg) or true
-        if continue == "continue" or continue == true then
-          h.handle(msg)
-          continue = continue == "continue" or false
-        end
+      local _compute = h.match(msg) 
+      if _compute then
+        h.handle(msg)
       end
     end, List)
   end

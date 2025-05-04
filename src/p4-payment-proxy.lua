@@ -13,6 +13,8 @@ Tokens = {"0syT13r0s0tgPmIed95bJnuSqaD29HQNN8D3ElLSrsc"}
 
 -- Always check if any deposits are unlockable
 local function always(msg)
+
+  print("inbound called")
   if LockPeriod ~= "Infinite" then
       local results = Utils.reduce(function (acc, record)
           local _isUnlocked = bint(record.Until) <= bint(msg['Block-Height'])
@@ -32,13 +34,13 @@ local function always(msg)
         Balances[record.Account], Claimable = tostring(bint(Balances[record.Account]) - bint(record.Quantity)),
           tostring(bint(Claimable) + bint(record.Quantity))
       end, results.Unlocked)
-      print("inbound called")
 
   end
 end
 
 -- Handle deposit from Token
 local function deposit(msg)
+  print("deposit called")
   assert(Utils.includes(msg.From, Tokens), "must be from a valid token")
   assert(bint(msg.Quantity) > bint(0), "must be greater than zero")
 
@@ -68,6 +70,7 @@ end
 
 -- (optional) handle receipt from node
 local function receipt (msg)
+  print("receipt called")
   if msg.From == Node then
       -- all deposits from account becomes claimable
       local results = Utils.reduce(function (acc, record)
@@ -94,6 +97,7 @@ end
 
 -- Operator withdrawls claimable tokens
 local function withdraw(msg)
+  print("called withdraw")
   assert(Utils.includes(msg.Token, Tokens), "must be a valid token")
   assert(bint(msg.Quantity) > bint(0), "must be greater than zero")
   assert(msg.From == Operator, "must be operator")
