@@ -60,7 +60,7 @@ local function deposit(msg)
     device = "patch@1.0",
     ["last-credit"] = tostring(Credits),
     cache = {
-      Balances = {
+      balance = {
         [msg.Sender] = Balances[msg.Sender]
       }
     },
@@ -92,7 +92,16 @@ local function receipt (msg)
         Balances[record.Account], Claimable = tostring(bint(Balances[record.Account]) - bint(record.Quantity)),
           tostring(bint(Claimable) + bint(record.Quantity))
       end, results.Unlocked)
-  end
+    -- send credit to node
+    Send({
+      device = "patch@1.0",
+      cache = {
+        balance = {
+          [msg.Signer] = Balances[msg.Signer]
+        }
+      }
+    })
+    end
 end
 
 -- Operator withdrawls claimable tokens
