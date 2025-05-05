@@ -10,7 +10,9 @@ _G.package.loaded['.stringify'] = require('test/helpers/stringify')
 _G.package.loaded['.bint'] = require('test/helpers/bint')
 local stringify = require('.stringify')
 Utils = require('test/helpers/utils')
-
+Inbox = {
+  { Tags = { Operator = 'operator', Node = 'node', Authority = 'node' }}
+}
 List = {}
 Handlers = {
   prepend = function (name, match, handle) 

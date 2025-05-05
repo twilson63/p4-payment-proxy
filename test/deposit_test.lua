@@ -14,7 +14,6 @@ T:add('deposit test', function ()
   assert(Balances["Router"] == "10000", "deposit was made")
   assert(#Locked == 1, "Deposit added to locked table")
   -- verify message was sent to node
-  assert(Outbox[1].Target == "node", "target should be set")
   assert(Outbox[1].quantity == "10000", "quantity sent")
   Outbox = {}
 end)

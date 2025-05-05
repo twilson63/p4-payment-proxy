@@ -4,10 +4,12 @@ Balances = Balances or {}
 Locked = Locked or {}
 Claimable = "0"
 LockPeriod = "5040" -- 7 days 
+-- count the number of credit messages
+CreditCounter = CreditCounter or 0
 
 
-Operator = nil
-Node = nil -- also needs to be authority
+Operator = Operator or (Inbox[1] and Inbox[1].Tags.Operator) or nil
+Node = Node or (Inbox[1] and Inbox[1].Tags.Node) or nil -- also needs to be authority
 
 Tokens = {"0syT13r0s0tgPmIed95bJnuSqaD29HQNN8D3ElLSrsc"}
 
@@ -43,23 +45,25 @@ local function deposit(msg)
 
   Balances[msg.Sender] = Balances[msg.Sender] or "0"
   -- increment account balance
-  Balances[msg.Sender] = tostring(bint(Balances[msg.Sender]) + bint(msg.Quantity))
+  Balances[msg.Sender], CreditCounter =
+    tostring(bint(Balances[msg.Sender]) + bint(msg.Quantity)), CreditCounter + 1
+
   -- add deposit to locked table
   table.insert(Locked, {
       Account = msg.Sender,
       Quantity = msg.Quantity,
       Until = tostring(bint(msg['Block-Height']) + bint(LockPeriod))
   })
+
   -- send credit to node
   Send({
     device = "patch@1.0",
+    ["last-credit"] = tostring(Credits),
     cache = {
       Balances = {
         [msg.Sender] = Balances[msg.Sender]
       }
     },
-    Target = Node,
-    path = "ledger~node-process@1.0",
     quantity = msg.Quantity,
     sender = msg.Sender
   })
